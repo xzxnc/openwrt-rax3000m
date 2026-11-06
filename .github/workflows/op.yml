@@ -10,7 +10,7 @@ on:
       OP_IP:
         description: '静态IP地址'     
         required: false
-        default: '192.168.2.1' 
+        default: '192.168.111.1' 
         type: string
       OP_author:
         description: '定制作者'     
@@ -35,20 +35,8 @@ jobs:
         device: ["rax3000m-emmc"]
         source: ["openwrt"]
         include:
-          - device: "rax3000m"
-            config: "CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cmcc_rax3000m=y"
-          - device: "rax3000me"
-            config: "CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cmcc_rax3000me=y"
           - device: "rax3000m-emmc"
             config: "CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cmcc_rax3000m-emmc=y"
-          - device: "rax3000m-nand"
-            config: "CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cmcc_rax3000m-nand=y"
-          - device: "rax3000m-256m-nand"
-            config: "CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cmcc_rax3000m-256m-nand=y"
-          - device: "xr30-nand"
-            config: "CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cmcc_xr30-nand=y"
-          - device: "xr30-emmc"
-            config: "CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cmcc_xr30-emmc=y"
 
     steps: 
     - name: 检查分支
