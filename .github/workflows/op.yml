@@ -142,6 +142,16 @@ jobs:
         KEOF
         echo ">> 追加后尾部:"; tail -14 "$KCFG"
 
+    - name: 跳过 MTK git 包哈希校验 (l1parser)
+      run: |
+        F=$GITHUB_WORKSPACE/$SOURCE_NAME/package/mtk/applications/l1parser/Makefile
+        if [ -f "$F" ]; then
+          sed -i 's/^PKG_MIRROR_HASH:=.*/PKG_MIRROR_HASH:=skip/' "$F"
+          grep -n 'PKG_MIRROR_HASH' "$F"
+        else
+          echo "l1parser Makefile 不存在，跳过"
+        fi
+
     - name: 加载自定义配置
       run: |
         [ -e files ] && mv files $SOURCE_NAME/files
