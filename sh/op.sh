@@ -51,11 +51,17 @@ for patch in *.patch; do
     [ -f "$patch" ] || continue
     
     echo "Applying $patch ..."
-    patch -p1 --no-backup-if-mismatch < "$patch" || {
-        echo "ERROR: Failed to apply $patch"
-        popd
-        exit 1
-    }
+    if ! patch -p1 --no-backup-if-mismatch < "$patch"; then
+        case "$patch" in
+            001-rust-disable-ci-mode.patch)
+                echo "WARN: $patch 与当前 feeds 不匹配，跳过（固件不编 rust 时无影响）"
+                ;;
+            *)
+                echo "ERROR: Failed to apply $patch"
+                exit 1
+                ;;
+        esac
+    fi
 done
 
 
