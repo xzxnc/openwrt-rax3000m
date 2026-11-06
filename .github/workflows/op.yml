@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        device: ["rax3000m", "rax3000me", "rax3000m-emmc", "rax3000m-nand", "rax3000m-256m-nand", "xr30-emmc", "xr30-nand"]
+        device: ["rax3000m-emmc"]
         source: ["openwrt"]
         include:
           - device: "rax3000m"
@@ -66,7 +66,7 @@ jobs:
         sudo apt-get install -y build-essential libfuse-dev clang flex bison g++ gawk \
           gcc-multilib g++-multilib gettext git libncurses-dev libssl-dev \
           python3-setuptools rsync swig unzip zlib1g-dev file wget \
-          libelf-dev qemu-utils ccache
+          libelf-dev qemu-utils ccache dwarves
         sudo ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
@@ -133,6 +133,27 @@ jobs:
         [ -e patch ] && cp -rf patch/nginx/luci.locations $SOURCE_NAME/feeds/packages/net/nginx/files-luci-support
         [ -e patch ] && cp -rf patch/nginx/uci.conf.template $SOURCE_NAME/feeds/packages/net/nginx-util/files
 
+    - name: 开启 dae 所需内核选项 (BTF/KPROBES/NET_CLS_BPF)
+      run: |
+        KCFG="$GITHUB_WORKSPACE/$SOURCE_NAME/target/linux/mediatek/filogic/config-6.12"
+        echo ">> target: $KCFG"
+        ls -l "$KCFG"
+        cat >> "$KCFG" <<'KEOF'
+        CONFIG_KPROBES=y
+        CONFIG_KPROBE_EVENTS=y
+        CONFIG_BPF_EVENTS=y
+        CONFIG_BPF_STREAM_PARSER=y
+        CONFIG_DEBUG_INFO=y
+        CONFIG_DEBUG_INFO_BTF=y
+        CONFIG_NET_CLS_BPF=m
+        CONFIG_NET_SCH_INGRESS=m
+        CONFIG_NET_CLS_ACT=y
+        CONFIG_NET_INGRESS=y
+        CONFIG_NET_EGRESS=y
+        CONFIG_CGROUPS=y
+        KEOF
+        echo ">> 追加后尾部:"; tail -14 "$KCFG"
+
     - name: 加载自定义配置
       run: |
         [ -e files ] && mv files $SOURCE_NAME/files
@@ -166,6 +187,17 @@ jobs:
         cd $SOURCE_NAME
         echo -e "$(nproc) thread compile"
         make -j$(nproc) || make -j1 || make -j1 V=s
+
+    - name: 校验 BTF / cls_bpf 是否编入
+      run: |
+        KC=$(ls $GITHUB_WORKSPACE/$SOURCE_NAME/build_dir/target-*/linux-filogic/linux-6.12.*/.config 2>/dev/null | head -1)
+        echo "== 内核 .config: $KC =="
+        [ -n "$KC" ] && grep -E '^(CONFIG_DEBUG_INFO_BTF|CONFIG_KPROBES|CONFIG_NET_CLS_BPF|CONFIG_BPF_EVENTS|CONFIG_NET_SCH_INGRESS)=' "$KC" || echo "!! 未找到内核 .config"
+        echo "== vmlinux .BTF 段 =="
+        V=$(ls $GITHUB_WORKSPACE/$SOURCE_NAME/build_dir/target-*/linux-filogic/vmlinux 2>/dev/null | head -1)
+        if [ -n "$V" ]; then readelf -S "$V" | grep -i btf || echo "!! 未见 .BTF 段"; else echo "!! 未找到 vmlinux"; fi
+        echo "== cls_bpf 模块 =="
+        find $GITHUB_WORKSPACE/$SOURCE_NAME/build_dir -name 'cls_bpf.ko*' 2>/dev/null | head -3 || true
 
     - name: 查看磁盘使用情况
       if: (!cancelled())
