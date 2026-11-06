@@ -188,11 +188,11 @@ jobs:
 
     - name: 校验 BTF / cls_bpf 是否编入
       run: |
-        KC=$(ls $GITHUB_WORKSPACE/$SOURCE_NAME/build_dir/target-*/linux-filogic/linux-6.12.*/.config 2>/dev/null | head -1)
+        KC=$(ls $GITHUB_WORKSPACE/$SOURCE_NAME/build_dir/target-*/linux-mediatek_filogic/linux-6.12.*/.config 2>/dev/null | head -1)
         echo "== 内核 .config: $KC =="
         [ -n "$KC" ] && grep -E '^(CONFIG_DEBUG_INFO_BTF|CONFIG_KPROBES|CONFIG_NET_CLS_BPF|CONFIG_BPF_EVENTS|CONFIG_NET_SCH_INGRESS)=' "$KC" || echo "!! 未找到内核 .config"
         echo "== vmlinux .BTF 段 =="
-        V=$(ls $GITHUB_WORKSPACE/$SOURCE_NAME/build_dir/target-*/linux-filogic/vmlinux 2>/dev/null | head -1)
+        V=$(ls $GITHUB_WORKSPACE/$SOURCE_NAME/build_dir/target-*/linux-mediatek_filogic/linux-6.12.*/vmlinux 2>/dev/null | head -1)
         if [ -n "$V" ]; then readelf -S "$V" | grep -i btf || echo "!! 未见 .BTF 段"; else echo "!! 未找到 vmlinux"; fi
         echo "== cls_bpf 模块 =="
         find $GITHUB_WORKSPACE/$SOURCE_NAME/build_dir -name 'cls_bpf.ko*' 2>/dev/null | head -3 || true
