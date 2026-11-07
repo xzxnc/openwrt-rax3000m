@@ -241,20 +241,6 @@ CONFIG_PACKAGE_my-default-settings=y
 
 CONFIG_PACKAGE_luci-app-vantage=y
 
-# 按现网首页/常用应用补充（2026-11-07）
-CONFIG_PACKAGE_luci-app-autotimeset=y
-CONFIG_PACKAGE_luci-app-diskman=y
-CONFIG_PACKAGE_luci-app-emmc-health=y
-CONFIG_PACKAGE_luci-app-fastnet=y
-CONFIG_PACKAGE_luci-app-nlbwmon=y
-CONFIG_PACKAGE_luci-app-openlist2=y
-CONFIG_PACKAGE_luci-app-samba4=y
-CONFIG_PACKAGE_luci-app-ttyd=y
-CONFIG_PACKAGE_luci-app-vlmcsd=y
-CONFIG_PACKAGE_luci-app-vsftpd=y
-CONFIG_PACKAGE_luci-theme-argon=y
-CONFIG_PACKAGE_luci-theme-m3e=y
-
 # dae 所需内核开关（OpenWrt 层，必须写在 .config，target config 会被这层覆盖）
 CONFIG_KERNEL_DEBUG_INFO=y
 CONFIG_KERNEL_DEBUG_INFO_REDUCED=n
