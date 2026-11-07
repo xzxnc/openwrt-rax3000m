@@ -1,0 +1,13 @@
+diff --git a/package/mtk/applications/l1parser/Makefile b/package/mtk/applications/l1parser/Makefile
+index b650b07..a3d3031 100644
+--- a/package/mtk/applications/l1parser/Makefile
++++ b/package/mtk/applications/l1parser/Makefile
+@@ -7,7 +7,7 @@ PKG_SOURCE_PROTO:=git
+ PKG_SOURCE_URL=https://github.com/chasey-dev/l1parser.git
+ PKG_SOURCE_DATE:=2025-12-11
+ PKG_SOURCE_VERSION:=081bb31211efc74594d25bfd1bb5811f3408a205
+-PKG_MIRROR_HASH:=2fdb0d7f29c3fbc53ae2af4b7a2399b8f2850a800299a934719304ae86ee2568
++PKG_MIRROR_HASH:=skip
+ 
+ PKG_LICENSE:=LGPL-2.1
+ PKG_MAINTAINER:=chasey-dev <ellenyoung0912@gmail.com>
